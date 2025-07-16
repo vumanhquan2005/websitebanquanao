@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Admin\CategoryController;
 Route::get('/', function () {
     return view('frontend.home');
 })->name('home');
@@ -18,6 +19,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// ADMIN ADMIN ADMIN
 
 Route::prefix('admin')->name('admin.')->group(function () {
     // Reports
@@ -40,6 +42,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/api/check-email-exists', [UserController::class, 'checkEmailExists'])->name('api.checkEmailExists');
         Route::get('/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('toggleStatus');
     });
+
+// DANH MỤC CHA
+Route::prefix('categories')->name('categories.')->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('index');
+    Route::get('/create', [CategoryController::class, 'create'])->name('create');
+    Route::post('/', [CategoryController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [CategoryController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [CategoryController::class, 'update'])->name('update');
+    Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('destroy');
+});
+
+// DANH MỤC CON
+Route::prefix('category-child')->name('categorychild.')->group(function () {
+    Route::get('/', [CategoryController::class, 'listChild'])->name('index');
+    Route::get('/create', [CategoryController::class, 'createChild'])->name('create');
+    Route::post('/', [CategoryController::class, 'store'])->name('store'); // Dùng chung store
+    Route::get('/{id}/edit', [CategoryController::class, 'editChild'])->name('edit');
+    Route::put('/{id}', [CategoryController::class, 'update'])->name('update');
+    Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('destroy');
+});
+
+
 });
 
 
@@ -67,16 +91,5 @@ Route::prefix('admin')->group(function () {
         return view('backend.product.edit');
     });
 
-    // List Category
-    Route::get('/categories', function () {
-        return view('backend.category.list');
-    });
-    // Create Category
-    Route::get('/categories/create', function () {
-        return view('backend.category.create');
-    });
-    // Edit Category
-    Route::get('/categories/edit', function () {
-        return view('backend.category.edit');
-    });
+
 });

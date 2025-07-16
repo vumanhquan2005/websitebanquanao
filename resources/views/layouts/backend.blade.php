@@ -262,12 +262,12 @@
                                         <span>Danh mục</span>
                                     </a>
                                     <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="{{ url('/admin/categories') }}">Danh sách danh mục</a>
+                                        <li><a href="{{ route('admin.categories.index') }}">Danh mục cha</a></li>
+                                        <li><a href="{{ route('admin.categories.create') }}">Thêm danh mục cha</a>
                                         </li>
 
-                                        <li>
-                                            <a href="{{ url('/admin/categories/create') }}">Thêm danh mục</a>
+                                        <li><a href="{{ route('admin.categorychild.index') }}">Danh mục con</a></li>
+                                        <li><a href="{{ route('admin.categorychild.create') }}">Thêm danh mục con</a>
                                         </li>
 
                                         <li>
@@ -613,7 +613,7 @@
         }
     </style>
 
-    {{-- popup start --}}
+    {{-- popup users start --}}
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.querySelectorAll('.btn-toggle-status').forEach(function(btn) {
@@ -671,7 +671,35 @@
         });
     </script>
 
-    {{-- popup end --}}
+    {{-- popup users end --}}
+
+    {{-- popup categories start --}}
+    <script>
+        document.querySelectorAll('.btn-delete-category').forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryId = this.dataset.id;
+                const categoryName = this.dataset.name;
+
+                Swal.fire({
+                    title: 'Bạn có chắc?',
+                    text: `Xóa danh mục "${categoryName}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById(`delete-form-${categoryId}`).submit();
+                    }
+                });
+            });
+        });
+    </script>
+
+    {{-- popup categories end --}}
+
 
 </body>
 

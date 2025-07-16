@@ -1,5 +1,5 @@
 @extends('layouts.backend')
-@section('title', 'Sửa danh mục')
+@section('title', 'Sửa danh mục con')
 @section('contents')
     <div class="page-body">
         <div class="container-fluid">
@@ -8,10 +8,10 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="card-header-2">
-                                <h5>Chỉnh sửa danh mục</h5>
+                                <h5>Chỉnh sửa danh mục con</h5>
                             </div>
 
-                            <form action="{{ route('admin.categories.update', $category->id) }}" method="POST"
+                            <form action="{{ route('admin.categorychild.update', $category->id) }}" method="POST"
                                 enctype="multipart/form-data" class="theme-form theme-form-2 mega-form">
                                 @csrf
                                 @method('PUT')
@@ -22,6 +22,22 @@
                                     <div class="col-sm-9">
                                         <input type="text" name="name" id="name" class="form-control"
                                             value="{{ old('name', $category->name) }}" required>
+                                    </div>
+                                </div>
+
+                                {{-- Chọn danh mục cha --}}
+                                <div class="mb-4 row align-items-center">
+                                    <label for="parent_id" class="form-label-title col-sm-3 mb-0">Danh mục cha</label>
+                                    <div class="col-sm-9">
+                                        <select name="parent_id" id="parent_id" class="form-select" required>
+                                            <option value="">-- Chọn danh mục cha --</option>
+                                            @foreach ($parents as $parent)
+                                                <option value="{{ $parent->id }}"
+                                                    {{ old('parent_id', $category->parent_id) == $parent->id ? 'selected' : '' }}>
+                                                    {{ $parent->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
 
@@ -39,8 +55,7 @@
 
                                 {{-- Upload ảnh mới --}}
                                 <div class="mb-4 row align-items-center">
-                                    <label for="image" class="form-label-title col-sm-3 mb-0">Ảnh mới (nếu muốn
-                                        đổi)</label>
+                                    <label for="image" class="form-label-title col-sm-3 mb-0">Ảnh mới</label>
                                     <div class="col-sm-9">
                                         <input type="file" name="image" id="image" class="form-control">
                                     </div>
@@ -66,14 +81,16 @@
                                 </div>
 
 
+
+
                                 {{-- Nút lưu --}}
                                 <div class="d-flex justify-content-end gap-2">
                                     <button type="submit" class="btn btn-primary">Cập nhật</button>
-                                    <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Hủy</a>
+                                    <a href="{{ route('admin.categorychild.index') }}" class="btn btn-secondary">Hủy</a>
                                 </div>
                             </form>
 
-                            {{-- Thông báo lỗi --}}
+                            {{-- Hiển thị lỗi --}}
                             @if ($errors->any())
                                 <div class="alert alert-danger mt-3">
                                     <ul class="mb-0">
