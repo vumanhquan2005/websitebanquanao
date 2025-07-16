@@ -144,43 +144,33 @@
                         </li>
                         <li class="profile-nav onhover-dropdown pe-0 me-0">
                             <div class="media profile-media">
-                                <img class="user-profile rounded-circle" src="assets/images/users/4.jpg"
-                                    alt="">
+                                {{-- Hiển thị avatar user đăng nhập --}}
+                                @php
+                                    $user = auth()->user();
+                                    $avatar =
+                                        $user && $user->avatar
+                                            ? asset('storage/' . $user->avatar)
+                                            : asset('assets/images/users/4.jpg');
+                                @endphp
+                                <img class="user-profile rounded-circle" src="{{ $avatar }}"
+                                    alt="User Avatar" />
                                 <div class="user-name-hide media-body">
-                                    <span>Emay Walter</span>
-                                    <p class="mb-0 font-roboto">Admin<i class="middle ri-arrow-down-s-line"></i></p>
+                                    <span>{{ $user->name ?? 'User' }}</span>
+                                    <p class="mb-0 font-roboto">{{ ucfirst($user->role ?? '') }}<i
+                                            class="middle ri-arrow-down-s-line"></i></p>
                                 </div>
                             </div>
                             <ul class="profile-dropdown onhover-show-div">
                                 <li>
-                                    <a href="all-users.html">
+                                    <a href="{{ route('admin.users.myaccount') }}">
                                         <i data-feather="users"></i>
-                                        <span>Users</span>
+                                        <span>TK của tôi</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="order-list.html">
-                                        <i data-feather="archive"></i>
-                                        <span>Orders</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="support-ticket.html">
-                                        <i data-feather="phone"></i>
-                                        <span>Spports Tickets</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="profile-setting.html">
-                                        <i data-feather="settings"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                        href="javascript:void(0)">
-                                        <i data-feather="log-out"></i>
-                                        <span>Log out</span>
+                                    <a href="{{ url('/') }}">
+                                        <i data-feather="home"></i>
+                                        <span>Quay lại trang chủ</span>
                                     </a>
                                 </li>
                             </ul>
@@ -425,6 +415,264 @@
     <script src="{{ asset('backend/assets/js/ratio.js') }}"></script>
     <script src="{{ asset('backend/assets/js/sidebareffect.js') }}"></script>
     <script src="{{ asset('backend/assets/js/script.js') }}"></script>
+
+
+    {{-- Validate form thêm user --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('form-add-user');
+
+            // Lưu placeholder mặc định ban đầu
+            ['name', 'email', 'phone', 'password', 'password_confirmation'].forEach(function(field) {
+                const input = form.querySelector('[name="' + field + '"]');
+                if (input) {
+                    input.dataset.placeholderDefault = input.placeholder;
+                }
+            });
+
+            // === Check email trùng realtime ===
+            let emailTimer = null;
+            const emailInput = form.querySelector('[name="email"]');
+            if (emailInput) {
+                emailInput.addEventListener('input', function() {
+                    // Reset khi user gõ lại
+                    emailInput.classList.remove('is-invalid');
+                    emailInput.placeholder = emailInput.dataset.placeholderDefault || '';
+
+                    clearTimeout(emailTimer);
+                    const email = emailInput.value.trim();
+                    if (!validateEmailStrict(email)) return;
+
+                    emailTimer = setTimeout(function() {
+                        fetch(
+                                `/admin/users/api/check-email-exists?email=${encodeURIComponent(email)}`
+                            )
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.exists) {
+                                    showError('email', 'Email đã tồn tại');
+                                }
+                            });
+                    }, 600);
+                });
+            }
+
+            // === Validate client + gửi AJAX ===
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let valid = true;
+
+                // Reset lỗi cũ
+                ['name', 'email', 'phone', 'password', 'password_confirmation'].forEach(function(field) {
+                    const input = form.querySelector('[name="' + field + '"]');
+                    if (input) {
+                        input.classList.remove('is-invalid');
+                        input.placeholder = input.dataset.placeholderDefault || '';
+                    }
+                });
+
+                // Lấy dữ liệu
+                const name = form.querySelector('[name="name"]').value.trim();
+                const email = form.querySelector('[name="email"]').value.trim();
+                const phone = form.querySelector('[name="phone"]').value.trim();
+                const password = form.querySelector('[name="password"]').value.trim();
+                const password_confirmation = form.querySelector('[name="password_confirmation"]').value
+                    .trim();
+
+                // Họ và tên
+                if (name === '') {
+                    showError('name', 'Họ và tên không được bỏ trống');
+                    valid = false;
+                } else if (name.length < 4) {
+                    showError('name', 'Họ và tên phải tối thiểu 4 ký tự');
+                    valid = false;
+                } else if (!/[A-ZÀÁẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶĐÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ]/.test(
+                        name)) {
+                    showError('name', 'Họ và tên phải có ít nhất 1 chữ in hoa');
+                    valid = false;
+                } else if (/[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(name)) {
+                    showError('name', 'Họ và tên không chứa số hoặc ký tự đặc biệt');
+                    valid = false;
+                }
+
+                // Email
+                if (email === '') {
+                    showError('email', 'Email không được bỏ trống');
+                    valid = false;
+                } else if (!validateEmailStrict(email)) {
+                    showError('email', 'Email không hợp lệ');
+                    valid = false;
+                }
+
+                // Số điện thoại
+                if (phone === '') {
+                    showError('phone', 'Số điện thoại không được bỏ trống');
+                    valid = false;
+                } else if (!/^(0[3|5|7|8|9])[0-9]{8}$/.test(phone)) {
+                    showError('phone', 'Số điện thoại không hợp lệ');
+                    valid = false;
+                }
+
+                // Mật khẩu
+                if (password === '') {
+                    showError('password', 'Mật khẩu không được bỏ trống');
+                    valid = false;
+                } else if (password.length < 6) {
+                    showError('password', 'Mật khẩu tối thiểu 6 ký tự');
+                    valid = false;
+                } else if (!/(?=.*[A-Z])/.test(password)) {
+                    showError('password', 'Mật khẩu phải có ít nhất 1 chữ in hoa');
+                    valid = false;
+                } else if (!/(?=.*[0-9])/.test(password)) {
+                    showError('password', 'Mật khẩu phải có ít nhất 1 số');
+                    valid = false;
+                }
+
+                // Nhập lại mật khẩu
+                if (password_confirmation === '') {
+                    showError('password_confirmation', 'Vui lòng nhập lại mật khẩu');
+                    valid = false;
+                } else if (password !== password_confirmation) {
+                    showError('password_confirmation', 'Mật khẩu nhập lại không khớp');
+                    valid = false;
+                }
+
+                if (!valid) return;
+
+                // Gửi AJAX lên server (Laravel validate lại)
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                    })
+                    .then(async response => {
+                        let data = {};
+                        try {
+                            data = await response.json();
+                        } catch (err) {}
+
+                        if (response.status === 422) {
+                            // Lỗi validate từ backend
+                            let errors = data.errors || {};
+                            for (let field in errors) {
+                                showError(field, errors[field][0]);
+                            }
+                        } else if (response.ok) {
+                            // Thành công, chuyển trang
+                            window.location.href = data.redirect || "/admin/users";
+                        } else {
+                            alert("Có lỗi hệ thống!");
+                        }
+                    })
+                    .catch(() => {
+                        alert("Không thể kết nối đến server!");
+                    });
+            });
+
+            // Khi user gõ lại, bỏ viền đỏ và placeholder về mặc định
+            ['name', 'email', 'phone', 'password', 'password_confirmation'].forEach(function(field) {
+                const input = form.querySelector('[name="' + field + '"]');
+                if (input) {
+                    input.addEventListener('input', function() {
+                        input.classList.remove('is-invalid');
+                        input.placeholder = input.dataset.placeholderDefault || '';
+                    });
+                }
+            });
+
+            // Hiển thị lỗi cho 1 input
+            function showError(inputName, message) {
+                const input = form.querySelector('[name="' + inputName + '"]');
+                if (input) {
+                    input.classList.add('is-invalid');
+                    input.value = '';
+                    input.placeholder = message;
+                }
+            }
+
+            // Check email chuẩn
+            function validateEmailStrict(email) {
+                return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+            }
+        });
+    </script>
+    <style>
+        .is-invalid {
+            border-color: #dc3545 !important;
+            background-color: #fff3f3;
+        }
+
+        .is-invalid::placeholder {
+            color: #dc3545 !important;
+            opacity: 1;
+        }
+    </style>
+
+    {{-- popup start --}}
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelectorAll('.btn-toggle-status').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const url = btn.getAttribute('data-url');
+
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn ẩn user này?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'Hủy',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const url = btn.getAttribute('data-url');
+                Swal.fire({
+                    title: 'Bạn chắc chắn muốn xóa?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Tạo form POST xóa động và submit
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = url;
+
+                        const csrf = document.createElement('input');
+                        csrf.type = 'hidden';
+                        csrf.name = '_token';
+                        csrf.value = '{{ csrf_token() }}';
+                        form.appendChild(csrf);
+
+                        const method = document.createElement('input');
+                        method.type = 'hidden';
+                        method.name = '_method';
+                        method.value = 'DELETE';
+                        form.appendChild(method);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+
+    {{-- popup end --}}
+
 </body>
 
 </html>

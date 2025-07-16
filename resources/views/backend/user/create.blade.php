@@ -11,225 +11,151 @@
                         <div class="col-sm-8 m-auto">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="title-header option-title">
-                                        <h5>Add New User</h5>
+                                    <div class="title-header option-title mb-4">
+                                        <h5>Thêm người dùng mới</h5>
                                     </div>
-                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
-                                                data-bs-target="#pills-home" type="button">Account</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-                                                data-bs-target="#pills-profile" type="button">Pernission</button>
-                                        </li>
-                                    </ul>
 
-                                    <div class="tab-content" id="pills-tabContent">
-                                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
-                                            <form class="theme-form theme-form-2 mega-form">
-                                                <div class="card-header-1">
-                                                    <h5>Product Information</h5>
-                                                </div>
+                                    <form id="form-add-user" class="theme-form theme-form-2 mega-form"
+                                        action="{{ route('admin.users.store') }}" method="POST"
+                                        enctype="multipart/form-data">
+                                        @csrf
 
-                                                <div class="row">
-                                                    <div class="mb-4 row align-items-center">
-                                                        <label class="form-label-title col-lg-2 col-md-3 mb-0">First
-                                                            Name</label>
-                                                        <div class="col-md-9 col-lg-10">
-                                                            <input class="form-control" type="text">
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mb-4 row align-items-center">
-                                                        <label
-                                                            class="col-lg-2 col-md-3 col-form-label form-label-title">Email
-                                                            Address</label>
-                                                        <div class="col-md-9 col-lg-10">
-                                                            <input class="form-control" type="email">
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mb-4 row align-items-center">
-                                                        <label
-                                                            class="col-lg-2 col-md-3 col-form-label form-label-title">Password</label>
-                                                        <div class="col-md-9 col-lg-10">
-                                                            <input class="form-control" type="password">
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row align-items-center">
-                                                        <label
-                                                            class="col-lg-2 col-md-3 col-form-label form-label-title">Confirm
-                                                            Password</label>
-                                                        <div class="col-md-9 col-lg-10">
-                                                            <input class="form-control" type="password">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
+                                        {{-- Họ và tên --}}
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-lg-2 col-md-3 col-form-label form-label-title">
+                                                Họ và tên <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <input class="form-control @error('name') is-invalid @enderror"
+                                                    name="name" type="text" value="{{ old('name') }}"
+                                                    placeholder="@error('name') {{ $message }} @else Họ và tên @enderror">
+                                                @error('name')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
                                         </div>
 
-                                        <div class="tab-pane fade" id="pills-profile" role="tabpanel">
-                                            <div class="card-header-1">
-                                                <h5>Product Related Permition</h5>
-                                            </div>
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-md-2 mb-0">Add Product</label>
-                                                <div class="col-md-9">
-                                                    <form class="radio-section">
-                                                        <label>
-                                                            <input type="radio" name="opinion" checked>
-                                                            <i></i>
-                                                            <span>Allow</span>
-                                                        </label>
-
-                                                        <label>
-                                                            <input type="radio" name="opinion" />
-                                                            <i></i>
-                                                            <span>Deny</span>
-                                                        </label>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-md-2 mb-0">Update Product</label>
-                                                <div class="col-md-9">
-                                                    <form class="radio-section">
-                                                        <label>
-                                                            <input type="radio" name="opinion" />
-                                                            <i></i>
-                                                            <span>Allow</span>
-                                                        </label>
-
-                                                        <label>
-                                                            <input type="radio" name="opinion" checked>
-                                                            <i></i>
-                                                            <span>Deny</span>
-                                                        </label>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-md-2 mb-0">Delete Product</label>
-                                                <div class="col-md-9">
-                                                    <form class="radio-section">
-                                                        <label>
-                                                            <input type="radio" name="opinion" checked>
-                                                            <i></i>
-                                                            <span>Allow</span>
-                                                        </label>
-
-                                                        <label>
-                                                            <input type="radio" name="opinion" />
-                                                            <i></i>
-                                                            <span>Deny</span>
-                                                        </label>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-md-2 mb-0">Apply Discount</label>
-                                                <div class="col-md-9">
-                                                    <form class="radio-section">
-                                                        <label>
-                                                            <input type="radio" name="opinion" />
-                                                            <i></i>
-                                                            <span>Allow</span>
-                                                        </label>
-
-                                                        <label>
-                                                            <input type="radio" name="opinion" checked>
-                                                            <i></i>
-                                                            <span>Deny</span>
-                                                        </label>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <div class="card-header-1">
-                                                <h5>Category Related Permition</h5>
-                                            </div>
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-md-2 mb-0">Add Product</label>
-                                                <div class="col-md-9">
-                                                    <form class="radio-section">
-                                                        <label>
-                                                            <input type="radio" name="opinion" checked>
-                                                            <i></i>
-                                                            <span>Allow</span>
-                                                        </label>
-
-                                                        <label>
-                                                            <input type="radio" name="opinion" />
-                                                            <i></i>
-                                                            <span>Deny</span>
-                                                        </label>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-md-2 mb-0">Update Product</label>
-                                                <div class="col-md-9">
-                                                    <form class="radio-section">
-                                                        <label>
-                                                            <input type="radio" name="opinion" />
-                                                            <i></i>
-                                                            <span>Allow</span>
-                                                        </label>
-
-                                                        <label>
-                                                            <input type="radio" name="opinion" checked>
-                                                            <i></i>
-                                                            <span>Deny</span>
-                                                        </label>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-md-2 mb-0">Delete Product</label>
-                                                <div class="col-md-9">
-                                                    <form class="radio-section">
-                                                        <label>
-                                                            <input type="radio" name="opinion" />
-                                                            <i></i>
-                                                            <span>Allow</span>
-                                                        </label>
-
-                                                        <label>
-                                                            <input type="radio" name="opinion" checked>
-                                                            <i></i>
-                                                            <span>Deny</span>
-                                                        </label>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-md-2 mb-0">Apply Discount</label>
-                                                <div class="col-md-9">
-                                                    <form class="radio-section">
-                                                        <label>
-                                                            <input type="radio" name="opinion" checked>
-                                                            <i></i>
-                                                            <span>Allow</span>
-                                                        </label>
-
-                                                        <label>
-                                                            <input type="radio" name="opinion" />
-                                                            <i></i>
-                                                            <span>Deny</span>
-                                                        </label>
-                                                    </form>
-                                                </div>
+                                        {{-- Email --}}
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-lg-2 col-md-3 col-form-label form-label-title">
+                                                Email <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <input class="form-control @error('email') is-invalid @enderror"
+                                                    name="email" type="email" value="{{ old('email') }}"
+                                                    placeholder="@error('email') {{ $message }} @else Email @enderror">
+                                                @error('email')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
-                                    </div>
+
+                                        {{-- Số điện thoại --}}
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-lg-2 col-md-3 col-form-label form-label-title">
+                                                Số điện thoại <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <input class="form-control @error('phone') is-invalid @enderror"
+                                                    name="phone" type="text" value="{{ old('phone') }}"
+                                                    placeholder="@error('phone') {{ $message }} @else Số điện thoại @enderror">
+                                                @error('phone')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        {{-- Mật khẩu --}}
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-lg-2 col-md-3 col-form-label form-label-title">
+                                                Mật khẩu <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <input class="form-control @error('password') is-invalid @enderror"
+                                                    name="password" type="password"
+                                                    placeholder="@error('password') {{ $message }} @else Mật khẩu @enderror">
+                                                @error('password')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        {{-- Nhập lại mật khẩu --}}
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-lg-2 col-md-3 col-form-label form-label-title">
+                                                Nhập lại mật khẩu <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <input
+                                                    class="form-control @error('password_confirmation') is-invalid @enderror"
+                                                    name="password_confirmation" type="password"
+                                                    placeholder="@error('password_confirmation') {{ $message }} @else Nhập lại mật khẩu @enderror">
+                                                @error('password_confirmation')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        {{-- Vai trò --}}
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-lg-2 col-md-3 col-form-label form-label-title">Vai trò</label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <select class="form-select @error('role') is-invalid @enderror"
+                                                    name="role">
+                                                    <option value="member"
+                                                        {{ old('role', 'member') == 'member' ? 'selected' : '' }}>Thành
+                                                        viên</option>
+                                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>
+                                                        Quản trị viên</option>
+                                                </select>
+                                                @error('role')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        {{-- Trạng thái --}}
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-lg-2 col-md-3 col-form-label form-label-title">Trạng
+                                                thái</label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <select class="form-select @error('status') is-invalid @enderror"
+                                                    name="status">
+                                                    <option value="1" {{ old('status', 1) == 1 ? 'selected' : '' }}>
+                                                        Hoạt động</option>
+                                                    <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>
+                                                        Ngừng hoạt động</option>
+                                                </select>
+                                                @error('status')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        {{-- Ảnh đại diện --}}
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-lg-2 col-md-3 col-form-label form-label-title">Ảnh đại
+                                                diện</label>
+                                            <div class="col-md-9 col-lg-10">
+                                                <input class="form-control @error('avatar') is-invalid @enderror"
+                                                    name="avatar" type="file" accept="image/*">
+                                                @error('avatar')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 d-flex justify-content-center gap-3">
+                                            <button type="submit" class="btn btn-primary px-4">
+                                                <i class="ri-user-add-line me-1"></i> Thêm người dùng
+                                            </button>
+                                            <a href="{{ route('admin.users.index') }}"
+                                                class="btn btn-outline-secondary px-4">
+                                                <i class="ri-arrow-go-back-line me-1"></i> Quay lại
+                                            </a>
+                                        </div>
+                                    </form>
+                                    {{-- Nếu bạn muốn làm phần phân quyền (permission), mình sẽ hỗ trợ sau nhé --}}
                                 </div>
                             </div>
                         </div>
